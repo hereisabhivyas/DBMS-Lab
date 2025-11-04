@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communities - BookIt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            padding: 3rem 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .search-create-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-tab {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .filter-tab:hover {
+            background: #f1f5f9;
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .communities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .community-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .community-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .community-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .community-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .community-name {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .community-admin {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .community-body {
+            padding: 1.5rem;
+        }
+
+        .community-description {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .community-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 0.2rem;
+        }
+
+        .community-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: #f1f5f9;
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .community-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .community-actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .badge-featured {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .badge-new {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .community-detail-modal {
+            max-width: 800px;
+        }
+
+        .detail-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .detail-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 1rem;
+        }
+
+        .detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .detail-stat {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .activity-feed {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .activity-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .activity-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-time {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .members-preview {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .member-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid white;
+            margin-left: -10px;
+        }
+
+        .member-avatar:first-child {
+            margin-left: 0;
+        }
+
+        .more-members {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .search-create-bar {
+                flex-direction: column;
+            }
+
+            .communities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="Webpage.html">BookIt</a>
+            </div>
+            <div class="nav-links">
+                <a href="Webpage.html">Home</a>
+                <a href="Events webpage.html">Events</a>
+                <a href="Events webpage.html">Venues</a>
+                <a href="Community page.html">Communities</a>
+                <a href="Profile page.html" class="btn btn-primary">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Discover Communities</h1>
+        <p>Join communities, connect with like-minded people, and participate in amazing events</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Search and Create Bar -->
+        <div class="search-create-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="communitySearch" placeholder="Search communities..." onkeyup="searchCommunities()">
+            </div>
+            <button class="btn btn-primary" onclick="showModal('createCommunityModal')">
+                ➕ Create Community
+            </button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterCommunities('all', this)">All Communities</button>
+            <button class="filter-tab" onclick="filterCommunities('sports', this)">Sports</button>
+            <button class="filter-tab" onclick="filterCommunities('entertainment', this)">Entertainment</button>
+            <button class="filter-tab" onclick="filterCommunities('gaming', this)">Gaming</button>
+            <button class="filter-tab" onclick="filterCommunities('social', this)">Social</button>
+            <button class="filter-tab" onclick="filterCommunities('my', this)">My Communities</button>
+        </div>
+
+        <!-- Communities Grid -->
+        <div class="communities-grid" id="communitiesGrid">
+            <!-- Sample Community Cards -->
+            <div class="community-card" onclick="showCommunityDetail('Cricket Enthusiasts', 'sports')">
+                <div class="community-header">
+                    <span class="badge badge-featured">Featured</span>
+                    <div class="community-icon">🏏</div>
+                    <div class="community-name">Cricket Enthusiasts</div>
+                    <div class="community-admin">Admin: Rahul Sharma</div>
+                </div>
+                <div class="community-body">
+                    <p class="community-description">
+                        Join fellow cricket lovers! We organize weekly matches, watch parties, and discuss everything cricket. Perfect for players and fans alike.
+                    </p>
+                    <div class="community-stats">
+                        <div class="stat">
+                            <div class="stat-value">2.5K</div>
+                            <div class="stat-label">Members</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">48</div>
+                            <div class="stat-label">Events</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">892</div>
+                            <div class="stat-label">Chats</div>
+                        </div>
+                    </div>
+                    <div class="community-tags">
+                        <span class="tag">Sports</span>
+                        <span class="tag">Cricket</span>
+                        <span class="tag">Active</span>
+                    </div>
+                    <div class="members-preview">
+                        <div class="member-avatar">RS</div>
+                        <div class="member-avatar">AK</div>
+                        <div class="member-avatar">PJ</div>
+                        <div class="member-avatar">MV</div>
+                        <span class="more-members">+2,496 more</span>
+                    </div>
+                    <div class="community-actions">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); joinCommunity('Cricket Enthusiasts')">Join Community</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="community-card" onclick="showCommunityDetail('Gaming Arena', 'gaming')">
+                <div class="community-header">
+                    <span class="badge badge-new">New</span>
+                    <div class="community-icon">🎮</div>
+                    <div class="community-name">Gaming Arena</div>
+                    <div class="community-admin">Admin: Arjun Patel</div>
+                </div>
+                <div class="community-body">
+                    <p class="community-description">
+                        For gamers of all types! From console to PC, casual to competitive. Join tournaments, find teammates, and level up together.
+                    </p>
+                    <div class="community-stats">
+                        <div class="stat">
+                            <div class="stat-value">1.8K</div>
+                            <div class="stat-label">Members</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">32</div>
+                            <div class="stat-label">Events</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">1.2K</div>
+                            <div class="stat-label">Chats</div>
+                        </div>
+                    </div>
+                    <div class="community-tags">
+                        <span class="tag">Gaming</span>
+                        <span class="tag">E-Sports</span>
+                        <span class="tag">New</span>
+                    </div>
+                    <div class="members-preview">
+                        <div class="member-avatar">AP</div>
+                        <div class="member-avatar">SK</div>
+                        <div class="member-avatar">NK</div>
+                        <span class="more-members">+1,797 more</span>
+                    </div>
+                    <div class="community-actions">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); joinCommunity('Gaming Arena')">Join Community</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="community-card" onclick="showCommunityDetail('Music Lovers', 'entertainment')">
+                <div class="community-header">
+                    <div class="community-icon">🎵</div>
+                    <div class="community-name">Music Lovers</div>
+                    <div class="community-admin">Admin: Priya Mehta</div>
+                </div>
+                <div class="community-body">
+                    <p class="community-description">
+                        A vibrant community for music enthusiasts! Share playlists, discuss concerts, discover new artists, and attend live events together.
+                    </p>
+                    <div class="community-stats">
+                        <div class="stat">
+                            <div class="stat-value">3.2K</div>
+                            <div class="stat-label">Members</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">65</div>
+                            <div class="stat-label">Events</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2.1K</div>
+                            <div class="stat-label">Chats</div>
+                        </div>
+                    </div>
+                    <div class="community-tags">
+                        <span class="tag">Music</span>
+                        <span class="tag">Concerts</span>
+                        <span class="tag">Entertainment</span>
+                    </div>
+                    <div class="members-preview">
+                        <div class="member-avatar">PM</div>
+                        <div class="member-avatar">RK</div>
+                        <div class="member-avatar">SG</div>
+                        <div class="member-avatar">AN</div>
+                        <span class="more-members">+3,196 more</span>
+                    </div>
+                    <div class="community-actions">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); joinCommunity('Music Lovers')">Join Community</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="community-card" onclick="showCommunityDetail('Football Fanatics', 'sports')">
+                <div class="community-header">
+                    <div class="community-icon">⚽</div>
+                    <div class="community-name">Football Fanatics</div>
+                    <div class="community-admin">Admin: Vikram Shah</div>
+                </div>
+                <div class="community-body">
+                    <p class="community-description">
+                        Passionate about football? Join us for weekly matches, tournaments, watch parties, and debates about the beautiful game!
+                    </p>
+                    <div class="community-stats">
+                        <div class="stat">
+                            <div class="stat-value">1.9K</div>
+                            <div class="stat-label">Members</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">41</div>
+                            <div class="stat-label">Events</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">756</div>
+                            <div class="stat-label">Chats</div>
+                        </div>
+                    </div>
+                    <div class="community-tags">
+                        <span class="tag">Sports</span>
+                        <span class="tag">Football</span>
+                        <span class="tag">Active</span>
+                    </div>
+                    <div class="members-preview">
+                        <div class="member-avatar">VS</div>
+                        <div class="member-avatar">KP</div>
+                        <div class="member-avatar">DM</div>
+                        <span class="more-members">+1,897 more</span>
+                    </div>
+                    <div class="community-actions">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); joinCommunity('Football Fanatics')">Join Community</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="community-card" onclick="showCommunityDetail('Comedy Club', 'entertainment')">
+                <div class="community-header">
+                    <div class="community-icon">😂</div>
+                    <div class="community-name">Comedy Club</div>
+                    <div class="community-admin">Admin: Amit Desai</div>
+                </div>
+                <div class="community-body">
+                    <p class="community-description">
+                        Love comedy? Join us for stand-up shows, improv nights, comedy movie screenings, and share your favorite jokes!
+                    </p>
+                    <div class="community-stats">
+                        <div class="stat">
+                            <div class="stat-value">2.1K</div>
+                            <div class="stat-label">Members</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">38</div>
+                            <div class="stat-label">Events</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">1.5K</div>
+                            <div class="stat-label">Chats</div>
+                        </div>
+                    </div>
+                    <div class="community-tags">
+                        <span class="tag">Comedy</span>
+                        <span class="tag">Entertainment</span>
+                        <span class="tag">Fun</span>
+                    </div>
+                    <div class="members-preview">
+                        <div class="member-avatar">AD</div>
+                        <div class="member-avatar">SM</div>
+                        <div class="member-avatar">RJ</div>
+                        <span class="more-members">+2,097 more</span>
+                    </div>
+                    <div class="community-actions">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); joinCommunity('Comedy Club')">Join Community</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="community-card" onclick="showCommunityDetail('Bowling League', 'sports')">
+                <div class="community-header">
+                    <span class="badge badge-featured">Featured</span>
+                    <div class="community-icon">🎳</div>
+                    <div class="community-name">Bowling League</div>
+                    <div class="community-admin">Admin: Neha Gupta</div>
+                </div>
+                <div class="community-body">
+                    <p class="community-description">
+                        Strike! Join our bowling community for tournaments, casual games, lessons, and social events. All skill levels welcome!
+                    </p>
+                    <div class="community-stats">
+                        <div class="stat">
+                            <div class="stat-value">856</div>
+                            <div class="stat-label">Members</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Events</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">423</div>
+                            <div class="stat-label">Chats</div>
+                        </div>
+                    </div>
+                    <div class="community-tags">
+                        <span class="tag">Bowling</span>
+                        <span class="tag">Sports</span>
+                        <span class="tag">Social</span>
+                    </div>
+                    <div class="members-preview">
+                        <div class="member-avatar">NG</div>
+                        <div class="member-avatar">PK</div>
+                        <div class="member-avatar">MS</div>
+                        <span class="more-members">+853 more</span>
+                    </div>
+                    <div class="community-actions">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); joinCommunity('Bowling League')">Join Community</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Community Modal -->
+    <div id="createCommunityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Community</h2>
+                <button class="close-btn" onclick="closeModal('createCommunityModal')">&times;</button>
+            </div>
+            <form id="createCommunityForm">
+                <div class="form-group">
+                    <label>Community Name *</label>
+                    <input type="text" name="community_name" required placeholder="e.g., Cricket Enthusiasts">
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="sports">Sports</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="social">Social</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea name="description" rows="4" required placeholder="Describe your community..."></textarea>
+                </div>
+                <div class="form-group">

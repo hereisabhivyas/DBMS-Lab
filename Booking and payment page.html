@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking & Payment - BookIt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .progress-bar {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray);
+            transition: all 0.3s;
+            margin-bottom: 0.8rem;
+        }
+
+        .step.active .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step.completed .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-weight: 600;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+        }
+
+        .step.completed .step-label {
+            color: var(--success);
+        }
+
+        .booking-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .main-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .event-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .event-image {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            flex-shrink: 0;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: var(--gray);
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .ticket-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-info {
+            flex: 1;
+        }
+
+        .ticket-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .ticket-price {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 35px;
+            height: 35px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .quantity-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .time-slot {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .time-slot.selected {
+            background: var(--primary);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+
+        .time-slot.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .time-slot-time {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .time-slot-status {
+            font-size: 0.85rem;
+        }
+
+        .payment-methods {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .payment-method {
+            padding: 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: #f0f4ff;
+        }
+
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .payment-info h4 {
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .payment-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .card-details {
+            display: none;
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .card-details.active {
+            display: block;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--gray);
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .summary-total {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .total-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .promo-code {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .promo-code input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .promo-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .promo-btn:hover {
+            background: #059669;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .success-icon {
+            width: 120px;
+            height: 120px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin: 0 auto 2rem;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-title {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .booking-details {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        @media (max-width: 1024px) {
+            .booking-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .progress-line {
+                display: none;
+            }
+
+            .step {
+                width: 100%;
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 1rem;
+            }
+
+            .step-circle {
+                margin-bottom: 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.2rem;
+        }
+
+        .checkbox-group label {
+            color: var(--gray);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .insurance-option {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .insurance-option h4 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .insurance-option p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .insurance-price {
+            color: var(--primary);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="Webpage.html">BookIt</a>
+            </div>
+            <div class="nav-links">
+                <a href="Events webpage.html">← Back to Events</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressFill" style="width: 33%"></div>
+                </div>
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Select Tickets</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Contact Details</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="step" id="step4">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Content -->
+        <div class="booking-content">
+            <!-- Main Section -->
+            <div class="main-section">
+                <!-- Event Info Card -->
+                <div class="event-card">
+                    <div class="event-image">🎵</div>
+                    <div class="event-details">
+                        <h2 class="event-title">Music Festival 2025</h2>
+                        <div class="event-meta">
+                            <div class="meta-row">
+                                <span>📅</span>
+                                <span>December 15, 2025 | 6:00 PM - 12:00 AM</span>
+                            </div>
+                            <div class="meta-row">
+                                <span>📍</span>
+                                <span>City Stadium, Ahmedabad, Gujarat</span>
+                            </div>
+                            <div class="meta-row">
+                                <span>🎭</span>
+                                <span>Music Concert • Live Performance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Select Tickets -->
+                <div id="section1" class="section-content active">
+                    <h2 class="section-title">🎫 Select Tickets</h2>
+
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <span>Please select the number of tickets you want to purchase</span>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="ticket-selector">
+                            <div class="ticket-info">
+                                <div class="ticket-name">General Admission</div>
+                                <div class="ticket-price">₹1,500</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity('general', -1)">-</button>
+                                <span class="quantity-display" id="generalQty">0</span>
+                                <button class="quantity-btn" onclick="updateQuantity('general', +1)">+</button>
+                            </div>
+
+                            <script>
+                                // Ensure updateQuantity is defined so the inline onclick handlers do not throw.
+                                function updateQuantity(type, delta) {
+                                    const el = document.getElementById(type + 'Qty');
+                                    if (!el) return;
+                                    let qty = parseInt(el.textContent, 10) || 0;
+                                    qty = Math.max(0, qty + delta);
+                                    el.textContent = qty;
+
+                                    // Small visual feedback (smooth scale animation)
+                                    el.style.transition = 'transform 150ms ease';
+                                    el.style.transform = 'scale(1.15)';
+                                    setTimeout(() => {
+                                        el.style.transform = '';
+                                    }, 150);
+
+                                    // Optionally update other UI (totals) here.
+                                }
+                            </script>
+                        </div>
+
+                        <div class="ticket-selector">
+                            <div class="ticket-info">
+                                <div class="ticket-name">VIP Pass</div>
+                                <div class="ticket-price">₹3,500</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity('vip', -1)">-</button>
+                                <span class="quantity-display" id="vipQty">0</span>
+                                <button class="quantity-btn" onclick="updateQuantity('vip', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="ticket-selector">
+                            <div class="ticket-info">
+                                <div class="ticket-name">Premium Seating</div>
+                                <div class="ticket-price">₹2,500</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity('premium', -1)">-</button>
+                                <span class="quantity-display" id="premiumQty">0</span>
+                                <button class="quantity-btn" onclick="updateQuantity('premium', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Select Date & Time Slot</h3>
+                        <div class="form-group">
+                            <label>Event Date</label>
+                            <input type="date" id="eventDate" value="2025-12-15" min="2025-11-01">
+                        </div>
+
+                        <div class="time-slots-grid">
+                            <div class="time-slot" onclick="selectTimeSlot(this)">
+                                <div class="time-slot-time">6:00 PM</div>
+                                <div class="time-slot-status">Available</div>
+                            </div>
+                            <div class="time-slot selected" onclick="selectTimeSlot(this)">
+                                <div class="time-slot-time">7:00 PM</div>
+                                <div class="time-slot-status">Available</div>
+                            </div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)">
+                                <div class="time-slot-time">8:00 PM</div>
+                                <div class="time-slot-status">Available</div>
+                            </div>
+                            <div class="time-slot disabled">
+                                <div class="time-slot-time">9:00 PM</div>
+                                <div class="time-slot-status">Sold Out</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="nextStep(2)">Continue to Details →</button>
+                    </div>
+
+                    <script>
+                        // Minimal navigation & UI helpers for the multi-step flow
+                        (function () {
+                            function setActiveStep(stepNum) {
+                                // Sections
+                                var i, sec;
+                                for (i = 1; i <= 4; i++) {
+                                    sec = document.getElementById('section' + i);
+                                    if (sec) {
+                                        if (i === stepNum) {
+                                            sec.classList.add('active');
+                                        } else {
+                                            sec.classList.remove('active');
+                                        }
+                                    }
+                                }
+
+                                // Progress steps visuals
+                                var steps = document.querySelectorAll('.progress-steps .step');
+                                steps.forEach(function (el, idx) {
+                                    var s = idx + 1;
+                                    el.classList.remove('active', 'completed');
+                                    if (s < stepNum) el.classList.add('completed');
+                                    if (s === stepNum) el.classList.add('active');
+                                });
+
+                                // Progress bar fill
+                                var fill = document.getElementById('progressFill');
+                                if (fill) {
+                                    var widths = {1: '33%', 2: '66%', 3: '100%', 4: '100%'};
+                                    fill.style.width = widths[stepNum] || '0%';
+                                }
+                            }
+
+                            window.nextStep = function (stepNum) {
+                                setActiveStep(stepNum);
+                                // scroll to top of container for visibility on small screens
+                                var container = document.querySelector('.container');
+                                if (container) container.scrollIntoView({behavior: 'smooth'});
+                            };
+
+                            window.previousStep = function (stepNum) {
+                                setActiveStep(stepNum);
+                                var container = document.querySelector('.container');
+                                if (container) container.scrollIntoView({behavior: 'smooth'});
+                            };
+
+                            window.selectTimeSlot = function (el) {
+                                if (!el || el.classList.contains('disabled')) return;
+                                var slots = document.querySelectorAll('.time-slot');
+                                slots.forEach(function (s) { s.classList.remove('selected'); });
+                                el.classList.add('selected');
+                            };
+
+                            window.selectPayment = function (el, type) {
+                                if (!el) return;
+                                var methods = document.querySelectorAll('.payment-method');
+                                methods.forEach(function (m) { m.classList.remove('selected'); });
+                                el.classList.add('selected');
+
+                                // show/hide card details area if present
+                                var cardDetails = document.querySelector('.card-details');
+                                if (cardDetails) {
+                                    if (type === 'card') cardDetails.classList.add('active');
+                                    else cardDetails.classList.remove('active');
+                                }
+                            };
+
+                            window.updateInsurance = function (checked) {
+                                // placeholder: update totals or UI based on insurance choice
+                                var info = {checked: !!checked};
+                                // For now just log; implement pricing updates where needed
+                                try { console.info('Insurance updated', info); } catch (e) {}
+                            };
+
+                            // Initialize default view
+                            document.addEventListener('DOMContentLoaded', function () {
+                                // Ensure initial step matches UI
+                                var initial = 1;
+                                if (document.querySelector('#section2.active')) initial = 2;
+                                else if (document.querySelector('#section3.active')) initial = 3;
+                                else if (document.querySelector('#section4.active')) initial = 4;
+                                setActiveStep(initial);
+                            });
+                        })();
+                    </script>
+                </div>
+
+                <!-- Step 2: Contact Details -->
+                <div id="section2" class="section-content">
+                    <h2 class="section-title">📋 Contact Details</h2>
+
+                    <div class="alert alert-warning">
+                        <span>⚠️</span>
+                        <span>Please ensure all information is correct. Tickets will be sent to the email provided.</span>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name *</label>
+                                <input type="text" placeholder="Enter first name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name *</label>
+                                <input type="text" placeholder="Enter last name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" placeholder="your@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" placeholder="+91 XXXXX XXXXX" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Special Requests (Optional)</label>
+                            <textarea rows="3" placeholder="Any special requirements or notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Additional Options</h3>
+                        <div class="insurance-option">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="insurance" onchange="updateInsurance(this.checked)">
+                                <div>
+                                    <h4>Ticket Protection Insurance</h4>
+                                    <p>Get 100% refund if you can't attend due to unforeseen circumstances</p>
+                                    <span class="insurance-price">+ ₹50 per ticket</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newsletter">
+                            <label for="newsletter">Subscribe to our newsletter for exclusive deals and updates</label>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" required>
+                            <label for="terms">I agree to the <a href="#" style="color: var(--primary);">Terms & Conditions</a> and <a href="#" style="color: var(--primary);">Privacy Policy</a></label>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="previousStep(1)">← Back</button>
+                        <button class="btn btn-primary" onclick="nextStep(3)">Continue to Payment →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div id="section3" class="section-content">
+                    <h2 class="section-title">💳 Payment Method</h2>
+
+                    <div class="alert alert-info">
+                        <span>🔒</span>
+                        <span>Your payment information is secure and encrypted</span>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Select Payment Method</h3>
+                        <div class="payment-methods">
+                            <div class="payment-method selected" onclick="selectPayment(this, 'card')">
+                                <div class="payment-icon">💳</div>
+                                <div class="payment-info">
+                                    <h4>Credit / Debit Card</h4>
+                                    <p>Pay securely with your card</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-method" onclick="selectPayment(this, 'upi')">
+                                <div class="payment-icon">📱</div>
+                                <div class="payment-info">
+                                    <h4>UPI</h4>
+                                    <p>PhonePe, Google Pay, Paytm & more</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-method" onclick="selectPayment(this, 'netbanking')">
+                                <div class="payment-icon">🏦</div>
+                                <div class="payment-info">
+                                    <h4>Net Banking</h4>
+                                    <p>Pay directly from your bank</p>
+                                </div>
+                            </div>
+
+                

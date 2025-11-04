@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookIt - Events & Venues</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .search-bar {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 2rem auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar input, .search-bar select {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-bar input:focus, .search-bar select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .category-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h3 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: white;
+            margin: 3rem 0 1.5rem;
+            text-align: center;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .event-content {
+            padding: 1.5rem;
+        }
+
+        .event-title {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .event-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .event-price {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray);
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .booking-summary {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .summary-row.total {
+            border-bottom: none;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="Webpage.html">BookIt</a>
+            </div>
+            <div class="nav-links">
+                <a href="Profile page.html" class="btn btn-primary">My Profile</a>
+                <a href="Events webpage.html">Events</a>
+                <a href="Events webpage.html">Venues</a>
+                <a href="Community page.html">Communities</a>
+                <a href="Login and signup page.html" onclick="showModal('loginModal')">Login</a>
+                <a href="Login and signup page.html" onclick="showModal('signupModal')" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Discover Amazing Events & Venues</h1>
+        <p>Book tickets for events, reserve sports turfs, bowling arenas, and fun activities</p>
+        
+        <div class="search-bar">
+            <input type="text" placeholder="Search events, venues..." id="searchInput">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="events">Events</option>
+                <option value="sports">Sports</option>
+                <option value="entertainment">Entertainment</option>
+            </select>
+            <button class="btn btn-primary" onclick="searchItems()">Search</button>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="container">
+        <h2 class="section-title">Browse Categories</h2>
+        <div class="categories">
+            <div class="category-card" onclick="filterByCategory('events')">
+                <div class="category-icon">🎭</div>
+                <h3>Events</h3>
+                <p>Concerts, festivals & more</p>
+            </div>
+            <div class="category-card" onclick="filterByCategory('sports')">
+                <div class="category-icon">⚽</div>
+                <h3>Sports Turfs</h3>
+                <p>Cricket, football fields</p>
+            </div>
+            <div class="category-card" onclick="filterByCategory('bowling')">
+                <div class="category-icon">🎳</div>
+                <h3>Bowling</h3>
+                <p>Book bowling lanes</p>
+            </div>
+            <div class="category-card" onclick="filterByCategory('entertainment')">
+                <div class="category-icon">🎮</div>
+                <h3>Game Zones</h3>
+                <p>Arcade & gaming arenas</p>
+            </div>
+            <div class="category-card" onclick="filterByCategory('activities')">
+                <div class="category-icon">🎪</div>
+                <h3>Activities</h3>
+                <p>Fun experiences</p>
+            </div>
+            <div class="category-card" onclick="filterByCategory('communities')">
+                <div class="category-icon">👥</div>
+                <h3>Communities</h3>
+                <p>Join & connect</p>
+            </div>
+        </div>
+
+        <!-- Featured Events -->
+        <h2 class="section-title" id="events">Featured Events</h2>
+        <div class="filters">
+            <div class="filter-group">
+                <select id="sortFilter" onchange="sortEvents()">
+                    <option value="date">Sort by Date</option>
+                    <option value="price">Sort by Price</option>
+                    <option value="popularity">Sort by Popularity</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <input type="date" id="dateFilter" onchange="filterEvents()">
+            </div>
+        </div>
+
+        <div class="events-grid" id="eventsGrid">
+            <!-- Sample Event Cards -->
+            <div class="event-card" onclick="showBookingModal('Music Festival 2025', 'event', 1500)">
+                <div class="event-image">🎵</div>
+                <div class="event-content">
+                    <h3 class="event-title">Music Festival 2025</h3>
+                    <div class="event-meta">
+                        <span>📅 Dec 15, 2025 | 6:00 PM</span>
+                        <span>📍 City Stadium</span>
+                        <span class="badge badge-success">Available</span>
+                    </div>
+                    <div class="event-price">₹1,500</div>
+                    <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                </div>
+            </div>
+
+            <div class="event-card" onclick="showBookingModal('Cricket Turf - Premium', 'venue', 2000)">
+                <div class="event-image">🏏</div>
+                <div class="event-content">
+                    <h3 class="event-title">Cricket Turf - Premium</h3>
+                    <div class="event-meta">
+                        <span>⏰ Available Slots</span>
+                        <span>📍 Sports Complex, Ahmedabad</span>
+                        <span class="badge badge-success">Available</span>
+                    </div>
+                    <div class="event-price">₹2,000/hr</div>
+                    <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                </div>
+            </div>
+
+            <div class="event-card" onclick="showBookingModal('Bowling Arena', 'venue', 500)">
+                <div class="event-image">🎳</div>
+                <div class="event-content">
+                    <h3 class="event-title">Bowling Arena</h3>
+                    <div class="event-meta">
+                        <span>⏰ Open 10 AM - 10 PM</span>
+                        <span>📍 Entertainment Hub</span>
+                        <span class="badge badge-success">Available</span>
+                    </div>
+                    <div class="event-price">₹500/game</div>
+                    <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                </div>
+            </div>
+
+            <div class="event-card" onclick="showBookingModal('Stand-up Comedy Night', 'event', 800)">
+                <div class="event-image">😂</div>
+                <div class="event-content">
+                    <h3 class="event-title">Stand-up Comedy Night</h3>
+                    <div class="event-meta">
+                        <span>📅 Nov 20, 2025 | 8:00 PM</span>
+                        <span>📍 Comedy Club</span>
+                        <span class="badge badge-warning">Limited Seats</span>
+                    </div>
+                    <div class="event-price">₹800</div>
+                    <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                </div>
+            </div>
+
+            <div class="event-card" onclick="showBookingModal('Football Turf', 'venue', 1800)">
+                <div class="event-image">⚽</div>
+                <div class="event-content">
+                    <h3 class="event-title">Football Turf</h3>
+                    <div class="event-meta">
+                        <span>⏰ 6 AM - 11 PM</span>
+                        <span>📍 Sports Arena</span>
+                        <span class="badge badge-success">Available</span>
+                    </div>
+                    <div class="event-price">₹1,800/hr</div>
+                    <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                </div>
+            </div>
+
+            <div class="event-card" onclick="showBookingModal('Gaming Zone - VR Experience', 'venue', 300)">
+                <div class="event-image">🎮</div>
+                <div class="event-content">
+                    <h3 class="event-title">Gaming Zone - VR Experience</h3>
+                    <div class="event-meta">
+                        <span>⏰ 11 AM - 9 PM</span>
+                        <span>📍 Game World</span>
+                        <span class="badge badge-success">Available</span>
+                    </div>
+                    <div class="event-price">₹300/hr</div>
+                    <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                <p style="text-align: center; margin-top: 1rem; color: var(--gray);">
+                    Don't have an account? <a href="#" onclick="closeModal('loginModal'); showModal('signupModal')" style="color: var(--primary);">Sign up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sign Up</h2>
+                <button class="close-btn" onclick="closeModal('signupModal')">&times;</button>
+            </div>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+                <p style="text-align: center; margin-top: 1rem; color: var(--gray);">
+                    Already have an account? <a href="#" onclick="closeModal('signupModal'); showModal('loginModal')" style="color: var(--primary);">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bookingTitle">Book Now</h2>
+                <button class="close-btn" onclick="closeModal('bookingModal')">&times;</button>
+            </div>
+            <form id="bookingForm">
+                <div class="tabs">
+                    <button type="button" class="tab active" onclick="switchTab(event, 'detailsTab')">Details</button>
+                    <button type="button" class="tab" onclick="switchTab(event, 'paymentTab')">Payment</button>
+                </div>
+
+                <div id="detailsTab" class="tab-content active">
+                    <div class="form-group">
+                        <label>Number of Tickets/Seats</label>
+                        <input type="number" id="ticketCount" name="tickets" value="1" min="1" onchange="updateBookingSummary()">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="booking_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time Slot</label>
+                        <select name="time_slot" required>
+                            <option value="">Select Time</option>
+                            <option value="morning">Morning (6 AM - 12 PM)</option>
+                            <option value="afternoon">Afternoon (12 PM - 6 PM)</option>
+                            <option value="evening">Evening (6 PM - 11 PM)</option>
+                        </select>
+                    </div>
+                    <div class="booking-summary">
+                        <div class="summary-row">
+                            <span>Price per ticket:</span>
+                            <span id="pricePerTicket">₹0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Number of tickets:</span>
+                            <span id="ticketNumber">1</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total Amount:</span>
+                            <span id="totalAmount">₹0</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="switchTab(event, 'paymentTab')">Proceed to Payment</button>
+                </div>
+
+                <div id="paymentTab" class="tab-content">
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select name="payment_method" required>
+                            <option value="">Select Method</option>
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="upi">UPI</option>
+                            <option value="netbanking">Net Banking</option>
+                            <option value="wallet">Wallet</option>
+                        </select>
+                    </div>
+                    <div class="booking-summary">
+                        <div class="summary-row total">
+                            <span>Amount to Pay:</span>
+                            <span id="paymentAmount">₹0</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Complete Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2025 BookIt. All rights reserved. | Ahmedabad, Gujarat</p>
+    </div>
+
+    <script>
+        let currentBookingPrice = 0;
+
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function switchTab(event, tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function showBookingModal(title, type, price) {
+            currentBookingPrice = price;
+            document.getElementById('bookingTitle').textContent = `Book: ${title}`;
+            document.getElementById('pricePerTicket').textContent = `₹${price}`;
+            updateBookingSummary();
+            showModal('bookingModal');
+        }
+
+        function updateBookingSummary() {
+            const tickets = parseInt(document.getElementById('ticketCount').value) || 1;
+            const total = currentBookingPrice * tickets;
+            
+            document.getElementById('ticketNumber').textContent = tickets;
+            document.getElementById('totalAmount').textContent = `₹${total}`;
+            document.getElementById('paymentAmount').textContent = `₹${total}`;
+        }
+
+        function filterByCategory(category) {
+            alert(`Filtering by: ${category}. This will connect to your PHP backend to fetch filtered data.`);
+        }
+
+        function searchItems() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            alert(`Searching for: "${searchTerm}" in category: "${category || 'All'}". Connect to PHP backend here.`);
+        }
+
+        function sortEvents() {
+            const sortBy = document.getElementById('sortFilter').value;
+            alert(`Sorting by: ${sortBy}. Connect to PHP backend to sort data.`);
+        }
+
+        function filterEvents() {
+            const date = document.getElementById('dateFilter').value;
+            alert(`Filtering by date: ${date}. Connect to PHP backend here.`);
+        }
+
+        // Handle form submissions
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            alert('Login form submitted! Connect this to your PHP login script.');
+            // Example PHP endpoint: fetch('login.php', { method: 'POST', body: formData })
+            closeModal('loginModal');
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            alert('Signup form submitted! Connect this to your PHP registration script.');
+            // Example PHP endpoint: fetch('signup.php', { method: 'POST', body: formData })
+            closeModal('signupModal');
+        });
+
+            document.getElementById('bookingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                alert('Booking form submitted! Connect this to your PHP booking script.');
+                // Example PHP endpoint: fetch('booking.php', { method: 'POST', body: formData })
+                closeModal('bookingModal');
+            });
+        </script>
